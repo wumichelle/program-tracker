@@ -151,7 +151,7 @@ function historyFor(p) {
 
 function detectedDeadlineFor(p) {
   const h = historyFor(p);
-  return h.deadline_text || h.ny_deadline_text || h.latest_match || p.detected_deadline || "Not detected yet";
+  return h.ny_deadline_text || h.deadline_text || "Not detected yet";
 }
 
 function deadlineStatusFor(p) {
