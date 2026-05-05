@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Early-Career Program Tracker</title>
+  <style>
+    :root { --bg:#f7f7fb; --card:#fff; --ink:#141827; --muted:#667085; --line:#e5e7eb; --accent:#1f6feb; --warn:#b42318; --ok:#027a48; --soon:#b54708; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+    header, main, .bar { max-width:1500px; margin:0 auto; padding-left:20px; padding-right:20px; }
+    header { padding-top:28px; padding-bottom:18px; }
+    h1 { margin:0 0 8px; font-size:32px; line-height:1.1; }
+    .subtitle { color:var(--muted); max-width:920px; line-height:1.5; }
+    .bar { margin-bottom:16px; display:grid; grid-template-columns:1.4fr .65fr .65fr .75fr; gap:10px; }
+    input, select { width:100%; min-width:0; padding:11px 12px; border:1px solid var(--line); border-radius:12px; background:white; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    main { padding-bottom:40px; }
+    .stats { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:16px; }
+    .stat { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+    .stat b { font-size:24px; display:block; }
+    .stat span { color:var(--muted); font-size:13px; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 16px; }
+    button { border:1px solid var(--line); background:white; border-radius:12px; padding:10px 12px; cursor:pointer; font-weight:650; }
+    button:hover { border-color:#b5c8ea; }
+    .tableWrap { background:var(--card); border:1px solid var(--line); border-radius:18px; overflow:auto; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+    table { width:100%; min-width:1400px; border-collapse:collapse; }
+    th { text-align:left; font-size:12px; letter-spacing:.02em; text-transform:uppercase; color:var(--muted); background:#fafafa; padding:12px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:1; }
+    td { padding:13px 12px; border-bottom:1px solid var(--line); vertical-align:top; font-size:14px; line-height:1.35; }
+    tr:last-child td { border-bottom:0; }
+    .pill { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:650; white-space:nowrap; }
+    .must { background:#eef4ff; color:#194185; }
+    .also { background:#fdf2fa; color:#9e165f; }
+    .bonus { background:#f8f9fc; color:#344054; }
+    .confirmed { background:#ecfdf3; color:var(--ok); }
+    .closed { background:#fef3f2; color:var(--warn); }
+    .watch { background:#fffaeb; color:var(--soon); }
+    a { color:var(--accent); text-decoration:none; font-weight:650; }
+    a:hover { text-decoration:underline; }
+    .muted { color:var(--muted); }
+    .small { font-size:12px; }
+    .deadline { max-width:300px; }
+    .footer { color:var(--muted); font-size:13px; margin-top:14px; line-height:1.5; }
+    @media (max-width:900px) {
+      .bar, .stats { grid-template-columns:1fr; }
+      .tableWrap { overflow:visible; }
+      table { min-width:0; }
+      table, thead, tbody, th, td, tr { display:block; }
+      thead { display:none; }
+      tr { border-bottom:1px solid var(--line); padding:8px 0; }
+      td { border:0; padding:8px 12px; }
+      td::before { content:attr(data-label); display:block; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.02em; margin-bottom:2px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Early-Career Program Tracker</h1>
+    <div class="subtitle">Auto-updating tracker for quant finance, trading, fintech, software engineering, and women-in-STEM programs. New York deadlines are prioritized when programs have multiple regional deadlines.</div>
+  </header>
+
+  <section class="bar">
+    <input id="search" placeholder="Search company, program, deadline, notes..." />
+    <select id="priority"><option value="">All priorities</option></select>
+    <select id="stage"><option value="">All stages</option></select>
+    <select id="category"><option value="">All categories</option></select>
+  </section>
+
+  <main>
+    <div class="stats">
+      <div class="stat"><b id="total">0</b><span>Total tracked programs</span></div>
+      <div class="stat"><b id="must">0</b><span>Must-track programs</span></div>
+      <div class="stat"><b id="updated">—</b><span>Last data update</span></div>
+      <div class="stat"><b id="changes">—</b><span>Page changes detected</span></div>
+    </div>
+
+    <div class="actions">
+      <button onclick="downloadCSV()">Download CSV</button>
+      <button onclick="window.location.reload()">Refresh page data</button>
+      <button onclick="showMustTrack()">Show must-track only</button>
+      <button onclick="showCheckNow()">Show check-now items</button>
+      <button onclick="clearFilters()">Clear filters</button>
+    </div>
+
+    <div class="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Priority</th>
+            <th>Company / Program</th>
+            <th>Stage / Audience</th>
+            <th>Detected Deadline</th>
+            <th>Deadline Status</th>
+            <th>Last Checked</th>
+            <th>Auto Signal</th>
+            <th>Location</th>
+            <th>Category</th>
+            <th>Link</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <p class="footer">
+      Deadlines are detected by the daily GitHub Action scan. The tracker prioritizes New York when a program has multiple locations. Always click the official link before applying because some application pages hide deadlines in portals or dynamic content.
+    </p>
+  </main>
+
+<script>
+let allPrograms = [];
+let history = {};
+
+function normalizePriority(priority) {
+  if (!priority) return "Bonus";
+  return priority.replace("Bonus / resume-building", "Bonus");
+}
+
+function normalizeStage(stage) {
+  const s = String(stage || "");
+  if (s.includes("Incoming first year") || s.includes("High school") || s.includes("pre-university")) {
+    return "Incoming first year / high school";
+  }
+  return s;
+}
+
+async function loadData() {
+  const res = await fetch("./data/programs.json?cacheBust=" + Date.now());
+  const data = await res.json();
+  allPrograms = (data.programs || []).map(p => ({
+    ...p,
+    priority: normalizePriority(p.priority),
+    stage: normalizeStage(p.stage)
+  }));
+
+  document.getElementById("updated").textContent = data.generated_at ? new Date(data.generated_at).toLocaleDateString() : "—";
+
+  try {
+    history = await (await fetch("./data/status-history.json?cacheBust=" + Date.now())).json();
+  } catch(e) {
+    history = {};
+  }
+
+  fillFilters();
+  render();
+}
+
+function historyFor(p) {
+  return history[p.official_url] || {};
+}
+
+function detectedDeadlineFor(p) {
+  const h = historyFor(p);
+  return h.deadline_text || h.ny_deadline_text || h.latest_match || p.detected_deadline || "Not detected yet";
+}
+
+function deadlineStatusFor(p) {
+  const h = historyFor(p);
+  const text = ((h.status_text || "") + " " + (h.deadline_text || "") + " " + (h.latest_match || "")).toLowerCase();
+
+  if (!p.official_url) return "Manual / school-specific";
+  if (text.includes("closed") || text.includes("applications are now closed")) return "Closed or possibly closed";
+  if (h.deadline_text || h.ny_deadline_text) return "Detected";
+  if (text.includes("deadline") || text.includes("apply") || text.includes("registration")) return "Check page";
+  return "Not posted / watch";
+}
+
+function statusClass(status) {
+  const s = String(status || "").toLowerCase();
+  if (s.includes("detected")) return "confirmed";
+  if (s.includes("closed")) return "closed";
+  return "watch";
+}
+
+function lastCheckedFor(p) {
+  const h = historyFor(p);
+  if (!h.checked_at) return "Not checked yet";
+  try {
+    return new Date(h.checked_at).toLocaleString();
+  } catch(e) {
+    return h.checked_at;
+  }
+}
+
+function autoSignalFor(p) {
+  const h = historyFor(p);
+  const text = ((h.status_text || "") + " " + (h.latest_match || "") + " " + (h.deadline_text || "")).toLowerCase();
+
+  if (!p.official_url) return {label:"Manual", cls:"watch"};
+  if (text.includes("closed") || text.includes("applications are now closed")) return {label:"Possibly closed", cls:"closed"};
+  if (text.includes("apply") || text.includes("deadline") || text.includes("registration")) return {label:"Check now", cls:"confirmed"};
+  if (h.changed) return {label:"Page changed", cls:"watch"};
+  return {label:"Watch", cls:"watch"};
+}
+
+function fillFilters() {
+  fill("priority", [...new Set(allPrograms.map(p => p.priority))].sort());
+  fill("stage", [...new Set(allPrograms.map(p => p.stage))].sort());
+  fill("category", [...new Set(allPrograms.map(p => p.category))].sort());
+}
+
+function fill(id, vals) {
+  const el = document.getElementById(id);
+  const current = el.value;
+  const labels = { priority: "priorities", stage: "stages", category: "categories" };
+  const label = labels[id] || `${id}s`;
+  el.innerHTML = `<option value="">All ${label}</option>` + vals.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+  el.value = current;
+}
+
+function priorityClass(p) {
+  if (p.startsWith("Must")) return "must";
+  if (p.startsWith("Also")) return "also";
+  return "bonus";
+}
+
+function render() {
+  const q = document.getElementById("search").value.toLowerCase();
+  const pr = document.getElementById("priority").value;
+  const st = document.getElementById("stage").value;
+  const ca = document.getElementById("category").value;
+
+  const filtered = allPrograms.filter(p => {
+    const h = historyFor(p);
+    const blob = (Object.values(p).join(" ") + " " + Object.values(h).join(" ")).toLowerCase();
+    return (!q || blob.includes(q)) && (!pr || p.priority === pr) && (!st || p.stage === st) && (!ca || p.category === ca);
+  });
+
+  document.getElementById("total").textContent = allPrograms.length;
+  document.getElementById("must").textContent = allPrograms.filter(p => p.priority.startsWith("Must")).length;
+  document.getElementById("changes").textContent = Object.keys(history).length ? Object.values(history).filter(h => h.changed).length : "—";
+
+  document.getElementById("rows").innerHTML = filtered.map(p => {
+    const signal = autoSignalFor(p);
+    const deadlineStatus = deadlineStatusFor(p);
+    const link = p.official_url ? `<a href="${p.official_url}" target="_blank" rel="noopener">Official page</a>` : `<span class="muted">Add school link</span>`;
+
+    return `<tr>
+      <td data-label="Priority"><span class="pill ${priorityClass(p.priority)}">${escapeHtml(p.priority)}</span></td>
+      <td data-label="Company / Program"><b>${escapeHtml(p.company)}</b><br>${escapeHtml(p.program)}</td>
+      <td data-label="Stage / Audience">${escapeHtml(p.stage)}<br><span class="muted small">${escapeHtml(p.audience)}</span></td>
+      <td data-label="Detected Deadline" class="deadline"><b>${escapeHtml(detectedDeadlineFor(p))}</b></td>
+      <td data-label="Deadline Status"><span class="pill ${statusClass(deadlineStatus)}">${escapeHtml(deadlineStatus)}</span></td>
+      <td data-label="Last Checked">${escapeHtml(lastCheckedFor(p))}</td>
+      <td data-label="Auto Signal"><span class="pill ${signal.cls}">${signal.label}</span></td>
+      <td data-label="Location">${escapeHtml(p.region || "Varies")}</td>
+      <td data-label="Category">${escapeHtml(p.category)}</td>
+      <td data-label="Link">${link}</td>
+      <td data-label="Notes">${escapeHtml(p.notes || "")}</td>
+    </tr>`;
+  }).join("");
+}
+
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+
+function showMustTrack() {
+  document.getElementById("priority").value = "Must track";
+  render();
+}
+
+function showCheckNow() {
+  document.getElementById("search").value = "check now";
+  render();
+}
+
+function clearFilters() {
+  document.getElementById("search").value = "";
+  document.getElementById("priority").value = "";
+  document.getElementById("stage").value = "";
+  document.getElementById("category").value = "";
+  render();
+}
+
+function downloadCSV() {
+  const headers = ["Company","Program","Priority","Audience","Stage","Detected Deadline","Deadline Status","Last Checked","Auto Signal","Location","Category","Official URL","Notes"];
+  const rows = allPrograms.map(p => {
+    const signal = autoSignalFor(p);
+    return [
+      p.company,
+      p.program,
+      p.priority,
+      p.audience,
+      p.stage,
+      detectedDeadlineFor(p),
+      deadlineStatusFor(p),
+      lastCheckedFor(p),
+      signal.label,
+      p.region,
+      p.category,
+      p.official_url,
+      p.notes
+    ];
+  });
+  const csv = [headers, ...rows].map(r => r.map(x => `"${String(x || "").replace(/"/g,'""')}"`).join(",")).join("\\n");
+  const blob = new Blob([csv], {type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "early-career-program-tracker.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+["search","priority","stage","category"].forEach(id => document.getElementById(id).addEventListener("input", render));
+loadData();
+</script>
+</body>
+</html>
