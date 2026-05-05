@@ -1,0 +1,37 @@
+name: Update program tracker
+
+on:
+  schedule:
+    - cron: "30 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright browser
+        run: python -m playwright install chromium
+
+      - name: Update page status data
+        run: python scripts/update_status.py
+
+      - name: Commit updated tracker data
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update program tracker status data"
+          file_pattern: data/*.json
