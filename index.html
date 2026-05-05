@@ -160,7 +160,7 @@
 
     el.innerHTML = `<option value="">All ${label}</option>` + vals.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
     el.value = current;
-}
+  }
 
     function priorityClass(p) {
       if (p.startsWith("Must")) return "must";
