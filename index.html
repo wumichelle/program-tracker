@@ -146,13 +146,21 @@
       fill("category", [...new Set(allPrograms.map(p => p.category))].sort());
     }
 
-    function fill(id, vals) {
-      const el = document.getElementById(id);
-      const current = el.value;
-      const label = id === "priority" ? "priorities" : id + "s";
-      el.innerHTML = `<option value="">All ${label}</option>` + vals.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
-      el.value = current;
-    }
+  function fill(id, vals) {
+    const el = document.getElementById(id);
+    const current = el.value;
+
+    const labels = {
+      priority: "priorities",
+      stage: "stages",
+      category: "categories"
+    };
+
+    const label = labels[id] || `${id}s`;
+
+    el.innerHTML = `<option value="">All ${label}</option>` + vals.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+    el.value = current;
+}
 
     function priorityClass(p) {
       if (p.startsWith("Must")) return "must";
