@@ -100,7 +100,7 @@
     {
       "company": "Jane Street",
       "program": "AMP",
-      "priority": "Bonus / resume-building",
+      "priority": "Bonus",
       "audience": "Recent high school graduates; eligibility varies",
       "stage": "High school / pre-university",
       "region": "US eligibility varies",
@@ -271,7 +271,7 @@
     {
       "company": "Citadel / Citadel Securities",
       "program": "Trading Invitational",
-      "priority": "Bonus / resume-building",
+      "priority": "Bonus",
       "audience": "Students interested in trading; eligibility varies",
       "stage": "University",
       "region": "New York City",
@@ -309,7 +309,7 @@
     {
       "company": "Bloomberg",
       "program": "Global Trading Challenge",
-      "priority": "Bonus / resume-building",
+      "priority": "Bonus",
       "audience": "University students",
       "stage": "University",
       "region": "Global",
@@ -575,7 +575,7 @@
     {
       "company": "Rewriting the Code",
       "program": "Student Membership / Events",
-      "priority": "Bonus / resume-building",
+      "priority": "Bonus",
       "audience": "Women and gender-expansive students in tech",
       "stage": "High school / pre-university",
       "region": "North America / global",
@@ -594,7 +594,7 @@
     {
       "company": "Rotman / University Trading Competitions",
       "program": "Rotman International Trading Competition and similar competitions",
-      "priority": "Bonus / resume-building",
+      "priority": "Bonus",
       "audience": "University students",
       "stage": "University",
       "region": "Canada / global",
