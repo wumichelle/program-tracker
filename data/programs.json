@@ -219,7 +219,7 @@
     {
       "company": "Citadel",
       "program": "Trading Invitational",
-      "priority": "Bonus / resume-building",
+      "priority": "Bonus",
       "audience": "Students interested in trading; eligibility varies",
       "stage": "University",
       "region": "Varies",
@@ -257,7 +257,7 @@
     {
       "company": "Bloomberg",
       "program": "Global Trading Challenge",
-      "priority": "Bonus / resume-building",
+      "priority": "Bonus",
       "audience": "University students",
       "stage": "University",
       "region": "Global",
@@ -485,7 +485,7 @@
     {
       "company": "Rewriting the Code",
       "program": "Student Membership / Events",
-      "priority": "Bonus / resume-building",
+      "priority": "Bonus",
       "audience": "Women and gender-expansive students in tech",
       "stage": "High school / pre-university",
       "region": "North America / global",
